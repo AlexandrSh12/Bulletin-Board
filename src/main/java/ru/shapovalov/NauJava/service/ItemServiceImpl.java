@@ -11,7 +11,7 @@ import ru.shapovalov.NauJava.repository.ItemRepository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/*
 @Service
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
@@ -68,4 +68,4 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-}
+}*/
