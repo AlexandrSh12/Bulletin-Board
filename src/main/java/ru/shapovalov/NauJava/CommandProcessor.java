@@ -6,13 +6,13 @@ import ru.shapovalov.NauJava.entity.ItemStatus;
 import ru.shapovalov.NauJava.service.ItemService;
 
 import java.util.List;
-
-@Component
+//тут просто закомментировал, чтобы не создавался бин и не работал консольный ввод
+//@Component
 public class CommandProcessor {
 
     private final ItemService itemService;
 
-    @Autowired
+    //@Autowired
     public CommandProcessor(ItemService itemService) {
         this.itemService = itemService;
     }
