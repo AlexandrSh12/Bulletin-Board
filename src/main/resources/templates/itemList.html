@@ -21,5 +21,8 @@
         <td th:text="${item.status}"></td>
     </tr>
 </table>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Выйти</button>
+</form>
 </body>
 </html>
