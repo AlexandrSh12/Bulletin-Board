@@ -1,2 +1,4 @@
 # NauJava Bulletin Board
-Project for Naumen Java course
+ПРАКТИЧЕСКАЯ РАБОТА № 4
+Базы данных, ORM Hibernate, Spring Data
+![ER-диаграмма](docs/diagram3.png)
