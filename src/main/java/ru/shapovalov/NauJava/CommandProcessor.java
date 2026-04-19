@@ -18,34 +18,119 @@ public class CommandProcessor {
     }
 
     public void processCommand(String input) {
-        String[] cmd = input.split(" ");
-        switch (cmd[0]) {
-            case "create" -> {
-                // create <id> <title> <description> <price> <category> <author>
-                itemService.createItem(Long.valueOf(cmd[1]), cmd[2], cmd[3],
-                        Double.valueOf(cmd[4]), cmd[5], cmd[6]);
-                System.out.println("Объявление успешно создано...");
+        try {
+            String[] cmd = input.trim().split("\\s+");
+            switch (cmd[0].toLowerCase()) {
+                case "create" -> {
+                    // create <title> <description> <price> <category> <author>
+                    requireArgs(cmd, 6);
+                    double price = parseDouble(cmd[3]);
+                    itemService.createItem(cmd[1], cmd[2], price, cmd[4], cmd[5]);
+                    System.out.println("Объявление успешно создано.");
+                }
+                case "edit" -> {
+                    // edit <id> <newDescription> <newPrice>
+                    requireArgs(cmd, 4);
+                    long id = parseLong(cmd[1]);
+                    double price = parseDouble(cmd[3]);
+                    itemService.editItem(id, cmd[2], price);
+                    System.out.println("Объявление успешно обновлено.");
+                }
+                case "status" -> {
+                    // status <id> <ACTIVE|ARCHIVED|SOLD>
+                    requireArgs(cmd, 3);
+                    long id = parseLong(cmd[1]);
+                    ItemStatus status = parseStatus(cmd[2]);
+                    itemService.changeStatus(id, status);
+                    System.out.println("Статус успешно изменён.");
+                }
+                case "sort"   -> printItems(itemService.sortByPrice());
+                case "filter" -> {
+                    requireArgs(cmd, 2);
+                    printItems(itemService.filterByCategory(cmd[1]));
+                }
+                case "list"   -> printItems(itemService.listAll());
+                case "help"   -> printHelp();
+                default -> System.out.println("Неизвестная команда. Введите 'help' для справки.");
             }
-            case "edit" -> {
-                // edit <id> <newDescription> <newPrice>
-                itemService.editItem(Long.valueOf(cmd[1]), cmd[2], Double.valueOf(cmd[3]));
-                System.out.println("Объявление успешно обновлено...");
-            }
-            case "status" -> {
-                // status <id> <ACTIVE|ARCHIVED|SOLD>
-                itemService.changeStatus(Long.valueOf(cmd[1]), ItemStatus.valueOf(cmd[2]));
-                System.out.println("Статус успешно изменён...");
-            }
-            case "sort" -> {
-                List<Item> items = itemService.sortByPrice();
-                items.forEach(System.out::println);
-            }
-            case "filter" -> {
-                // filter <category>
-                List<Item> items = itemService.filterByCategory(cmd[1]);
-                items.forEach(System.out::println);
-            }
-            default -> System.out.println("Введена неизвестная команда...");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка ввода: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Непредвиденная ошибка: " + e.getMessage());
         }
+    }
+    private void requireArgs(String[] cmd, int minCount) {
+        if (cmd.length < minCount) {
+            throw new IllegalArgumentException(
+                    "Недостаточно аргументов для команды '" + cmd[0] +
+                            "'. Введите 'help' для справки."
+            );
+        }
+    }
+
+    private long parseLong(String value) {
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("ID должен быть целым числом, получено: '" + value + "'.");
+        }
+    }
+
+    private double parseDouble(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Цена должна быть числом, получено: '" + value + "'.");
+        }
+    }
+
+    private ItemStatus parseStatus(String value) {
+        try {
+            return ItemStatus.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "Неизвестный статус '" + value + "'. Допустимые: ACTIVE, ARCHIVED, SOLD."
+            );
+        }
+    }
+    private void printItems(List<Item> items) {
+        if (items.isEmpty()) {
+            System.out.println("Объявления не найдены.");
+        } else {
+            items.forEach(System.out::println);
+        }
+    }
+    private void printHelp() {
+        System.out.println("""
+            Доступные команды:
+            
+              create <title> <description> <price> <category> <author>
+                  Создать новое объявление. ID генерируется автоматически.
+                  Пример: create Велосипед Горный_б/у 5000.0 Транспорт Иван
+            
+              edit <id> <newDescription> <newPrice>
+                  Изменить описание и цену объявления.
+                  Пример: edit 1 Новое_описание 4500.0
+            
+              status <id> <ACTIVE|ARCHIVED|SOLD>
+                  Изменить статус объявления.
+                  Пример: status 1 SOLD
+            
+              list
+                  Показать все объявления.
+            
+              sort
+                  Показать все объявления, отсортированные по цене.
+            
+              filter <category>
+                  Показать объявления по категории.
+                  Пример: filter Транспорт
+            
+              help
+                  Показать эту справку.
+            
+              exit
+                  Выйти из приложения.
+            """);
     }
 }

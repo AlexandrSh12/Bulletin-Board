@@ -10,24 +10,29 @@ import ru.shapovalov.NauJava.repository.ItemRepository;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final AppConfig appConfig;
+    private final AtomicLong idGenerator;
+    //private final AppConfig appConfig;
 
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, AppConfig appConfig) {
+    public ItemServiceImpl(ItemRepository itemRepository, AtomicLong idGenerator) {
         this.itemRepository = itemRepository;
-        this.appConfig = appConfig;
+        this.idGenerator = idGenerator;
+        //this.appConfig = appConfig;
     }
-    @PostConstruct
+    /*@PostConstruct
     public void printAppInfo() {
         System.out.println("App " + appConfig.getAppName() + " | version " + appConfig.getAppVersion());
-    }
+    }*/
+    // вывод инфы о приложении перенесен в AppConfig
     @Override
-    public void createItem(Long id, String title, String description, Double price, String category, String author) {
+    public void createItem(String title, String description, Double price, String category, String author) {
+        Long id = idGenerator.getAndIncrement();
         Item item = new Item(id, title, description, price, category, author);
         itemRepository.create(item);
     }
@@ -66,6 +71,9 @@ public class ItemServiceImpl implements ItemService {
                 .filter(item -> item.getCategory().equalsIgnoreCase(category))
                 .collect(Collectors.toList());
     }
-
-
+    // реализация метода для вывода списка всех объявлений
+    @Override
+    public List<Item> listAll() {
+        return itemRepository.findAll();
+    }
 }

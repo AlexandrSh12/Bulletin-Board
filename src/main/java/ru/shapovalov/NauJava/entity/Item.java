@@ -1,5 +1,7 @@
 package ru.shapovalov.NauJava.entity;
 
+import java.util.Objects;
+
 public class Item {
     private Long id;
     private String title;
@@ -81,6 +83,18 @@ public class Item {
             return "[" + id + "] " + title + " | " + price + " руб. | " +
                     category + " | " + status + " | Автор: " + author;
         }
+    }
+    //добавил equals и hashcode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item item)) return false;
+        return Objects.equals(id, item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

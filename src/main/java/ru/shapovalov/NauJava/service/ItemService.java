@@ -5,10 +5,12 @@ import ru.shapovalov.NauJava.entity.ItemStatus;
 
 import java.util.List;
 public interface ItemService {
-    void createItem(Long id, String title, String description,
+    void createItem(String title, String description,
                     Double price, String category, String author);
     void editItem(Long id, String newDescription, Double newPrice);
     void changeStatus(Long id, ItemStatus newStatus);
     List<Item> sortByPrice();
     List<Item> filterByCategory(String category);
+    // метод для вывода списка всех объявлений
+    List<Item> listAll();
 }

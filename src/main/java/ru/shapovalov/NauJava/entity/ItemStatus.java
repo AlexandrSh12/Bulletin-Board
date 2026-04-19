@@ -2,5 +2,7 @@ package ru.shapovalov.NauJava.entity;
 
 public enum ItemStatus {
     ACTIVE,
-    ARCHIVED
+    ARCHIVED,
+    SOLD
+    // добавил недостающий статус SOLD
 }
