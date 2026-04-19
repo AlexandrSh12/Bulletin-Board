@@ -33,13 +33,9 @@ public class ItemTransactionServiceImpl implements ItemTransactionService {
             if (!itemRepository.existsById(itemId)) {
                 throw new IllegalArgumentException("Объявление с id " + itemId + " не найдено");
             }
-            // удалить все комментарии объявления
-            List<Comment> comments = (List<Comment>) commentRepository.findAll();
-            for (Comment comment : comments) {
-                if (comment.getItem().getId().equals(itemId)) {
-                    commentRepository.delete(comment);
-                }
-            }
+            // удалить все комментарии объявления через репозиторий, а не через findAll()
+            List<Comment> comments = commentRepository.findCommentsByItemId(itemId);
+            commentRepository.deleteAll(comments);
             // удалить само объявление
             itemRepository.deleteById(itemId);
             transactionManager.commit(status);

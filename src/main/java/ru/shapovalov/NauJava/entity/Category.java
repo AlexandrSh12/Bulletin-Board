@@ -15,6 +15,7 @@ public class Category {
 
     private String name;
     private String description;
+    private String icon; // добавлен третий атрибут
 
     @OneToMany(mappedBy = "category")
     private List<Item> items;

@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -13,6 +15,8 @@ public class Comment {
     private Long id;
 
     private String text;
+    private LocalDateTime createdAt; // добавлен второй атрибут
+    private Integer rating;          // добавлен третий атрибут
 
     @ManyToOne
     @JoinColumn(name = "user_id")
