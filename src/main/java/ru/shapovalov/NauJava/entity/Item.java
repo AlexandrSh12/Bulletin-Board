@@ -1,5 +1,6 @@
 package ru.shapovalov.NauJava.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,7 @@ public class Item {
     @OneToMany(mappedBy = "item")
     private List<Favorite> favorites;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "item")
     private List<Comment> comments;
 
