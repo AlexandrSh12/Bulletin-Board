@@ -22,4 +22,24 @@ public class GlobalExceptionHandler {
     public ApiException handleGeneral(Exception e) {
         return ApiException.create(e);
     }
+
+    // 2 обработчика исключений, добавлены, чтобы возвращать 400, а не 500
+
+    // не передан обязательный параметр
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiException handleMissingParam(
+            org.springframework.web.bind.MissingServletRequestParameterException e) {
+        return ApiException.create(e);
+    }
+
+    // передан параметр неверного типа
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiException handleTypeMismatch(
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException e) {
+        return ApiException.create(e);
+    }
 }

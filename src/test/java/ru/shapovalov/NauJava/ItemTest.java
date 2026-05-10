@@ -1,5 +1,6 @@
 package ru.shapovalov.NauJava;
 
+import jakarta.transaction.Transactional;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import ru.shapovalov.NauJava.service.ItemTransactionService;
 import java.util.List;
 
 @SpringBootTest
+@Transactional
 public class ItemTest {
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;

@@ -80,4 +80,32 @@ public class UserServiceImplTest {
 
         Assertions.assertFalse(result.isPresent());
     }
+    // Позитивный тест — admin создаётся если его нет в базе
+    @Test
+    void testCreateAdminIfNotExists_adminNotExists() {
+        Mockito.when(userRepository.findByUsername("admin")).thenReturn(Optional.empty());
+        Mockito.when(passwordEncoder.encode("admin")).thenReturn("encodedAdminPassword");
+
+        userService.createAdminIfNotExists();
+
+        Mockito.verify(userRepository).save(Mockito.argThat(user ->
+                user.getUsername().equals("admin") &&
+                        user.getPassword().equals("encodedAdminPassword") &&
+                        user.getRole() == Role.ADMIN
+        ));
+    }
+
+    // Негативный тест — admin не создаётся если уже существует
+    @Test
+    void testCreateAdminIfNotExists_adminAlreadyExists() {
+        User existingAdmin = new User();
+        existingAdmin.setUsername("admin");
+        existingAdmin.setRole(Role.ADMIN);
+
+        Mockito.when(userRepository.findByUsername("admin")).thenReturn(Optional.of(existingAdmin));
+
+        userService.createAdminIfNotExists();
+
+        Mockito.verify(userRepository, Mockito.never()).save(Mockito.any());
+    }
 }
