@@ -9,11 +9,16 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 import java.time.Duration;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Import(SeleniumTestDataConfig.class)
 public class LoginSeleniumTest {
+
+    private static final String TEST_USERNAME = "selenium_admin";
+    private static final String TEST_PASSWORD = "selenium_pass";
 
     private WebDriver driver;
     private WebDriverWait wait;
@@ -37,21 +42,22 @@ public class LoginSeleniumTest {
         }
     }
 
-    // Тест успешного входа в систему
+    // Тест успешного входа в систему.
+    // Используем учётные данные из констант TEST_USERNAME/TEST_PASSWORD, которые соответствуют пользователю, созданному в SeleniumTestDataConfig,
+    // а не зависят от @PostConstruct продакшн-сервиса.
     @Test
     void testSuccessfulLogin() {
+        // открываем страницу логина
         driver.get(BASE_URL + "/login");
 
-        WebElement usernameInput = wait.until(
-                ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        WebElement passwordInput = driver.findElement(By.name("password"));
-        WebElement submitButton = driver.findElement(By.cssSelector("input[type='submit']"));
+        // вводим учётные данные тестового пользователя
+        driver.findElement(By.name("username")).sendKeys(TEST_USERNAME);
+        driver.findElement(By.name("password")).sendKeys(TEST_PASSWORD);
 
-        usernameInput.sendKeys("admin");
-        passwordInput.sendKeys("admin");
-        submitButton.click();
+        // нажимаем кнопку входа
+        driver.findElement(By.cssSelector("input[type='submit']")).click();
 
-        // После входа должны попасть на страницу со списком объявлений
+        // ждём редирект на страницу списка объявлений и проверяем url
         wait.until(ExpectedConditions.urlContains("/custom/items/view/list"));
         Assertions.assertTrue(driver.getCurrentUrl().contains("/custom/items/view/list"));
     }
@@ -59,20 +65,22 @@ public class LoginSeleniumTest {
     // Тест выхода из системы
     @Test
     void testLogout() {
-        // Сначала входим
+        // входим в систему через тестового пользователя
         driver.get(BASE_URL + "/login");
-        driver.findElement(By.name("username")).sendKeys("admin");
-        driver.findElement(By.name("password")).sendKeys("admin");
+        driver.findElement(By.name("username")).sendKeys(TEST_USERNAME);
+        driver.findElement(By.name("password")).sendKeys(TEST_PASSWORD);
         driver.findElement(By.cssSelector("input[type='submit']")).click();
 
+        // ждём успешного входа
         wait.until(ExpectedConditions.urlContains("/custom/items/view/list"));
 
-        // Нажимаем кнопку выхода
+        // нажимаем кнопку выхода
         WebElement logoutButton = wait.until(
-                ExpectedConditions.presenceOfElementLocated(By.cssSelector("button[type='submit']")));
+                ExpectedConditions.presenceOfElementLocated(
+                        By.cssSelector("button[type='submit']")));
         logoutButton.click();
 
-        // После выхода должны попасть на страницу логина
+        // ждём редиректа на страницу логина и проверяем url
         wait.until(ExpectedConditions.urlContains("/login"));
         Assertions.assertTrue(driver.getCurrentUrl().contains("/login"));
     }
